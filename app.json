@@ -4,14 +4,13 @@
     "slug": "khanamart-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "bundleIdentifier": "com.hiprotech.khanamart",
       "supportsTablet": true
@@ -23,9 +22,6 @@
         "backgroundColor": "#ffffff"
       }
     },
-    "plugins": [
-      "expo-font",
-      "expo-asset"
-    ]
+    "plugins": ["expo-font", "expo-asset"]
   }
 }
