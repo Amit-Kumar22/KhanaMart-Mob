@@ -1,0 +1,53 @@
+{
+  "name": "khanamart-mobile",
+  "version": "1.0.0",
+  "main": "expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@expo/metro-runtime": "~6.1.2",
+    "@expo/vector-icons": "^15.0.3",
+    "@hookform/resolvers": "^3.9.0",
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "@react-navigation/bottom-tabs": "^7.14.0",
+    "@react-navigation/native": "^6.1.18",
+    "@react-navigation/stack": "^6.4.1",
+    "@tanstack/react-query": "^5.56.2",
+    "autoprefixer": "^10.4.24",
+    "axios": "^1.7.7",
+    "css-loader": "^7.1.4",
+    "expo": "~54.0.0",
+    "expo-asset": "~12.0.12",
+    "expo-constants": "~18.0.13",
+    "expo-font": "~14.0.11",
+    "expo-linking": "~8.0.11",
+    "expo-splash-screen": "~31.0.13",
+    "expo-status-bar": "~3.0.9",
+    "nativewind": "^2.0.11",
+    "postcss-loader": "^8.2.1",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-hook-form": "^7.53.0",
+    "react-native": "0.81.5",
+    "react-native-gesture-handler": "~2.28.0",
+    "react-native-safe-area-context": "~5.6.0",
+    "react-native-screens": "~4.16.0",
+    "react-native-vector-icons": "^10.1.0",
+    "react-native-web": "^0.21.0",
+    "style-loader": "^4.0.0",
+    "zod": "^3.23.8",
+    "zustand": "^4.5.5"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@types/react": "~19.1.10",
+    "@types/react-native": "~0.73.0",
+    "tailwindcss": "3.3.2",
+    "typescript": "~5.9.2"
+  },
+  "private": true
+}

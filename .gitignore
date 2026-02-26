@@ -1,0 +1,102 @@
+# ─── OSX ────────────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ─── Node ───────────────────────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ─── Expo ───────────────────────────────────────────────────────────────────
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# ─── Android ────────────────────────────────────────────────────────────────
+android/
+# Uncomment the line below if you check in the android/ folder
+# !android/gradlew
+# !android/gradle/
+# !android/app/src/
+# !android/app/build.gradle
+# !android/build.gradle
+# !android/settings.gradle
+
+# Android build outputs
+android/app/build/
+android/build/
+android/.gradle/
+android/local.properties
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# Android signing keystores (NEVER commit these)
+*.keystore
+*.jks
+release.keystore
+
+# ─── iOS ────────────────────────────────────────────────────────────────────
+ios/
+# Uncomment the line below if you check in the ios/ folder
+# !ios/Podfile
+
+ios/build/
+ios/Pods/
+*.xcworkspace
+*.xcuserdata
+DerivedData/
+*.ipa
+
+# ─── TypeScript ─────────────────────────────────────────────────────────────
+*.tsbuildinfo
+
+# ─── Environment & Secrets ──────────────────────────────────────────────────
+.env
+.env.local
+.env.development
+.env.staging
+.env.production
+.env*.local
+google-services.json
+GoogleService-Info.plist
+
+# ─── Gradle ─────────────────────────────────────────────────────────────────
+.gradle/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
+
+# ─── Metro bundler ──────────────────────────────────────────────────────────
+.metro-health-check*
+
+# ─── Jest ───────────────────────────────────────────────────────────────────
+coverage/
+.jest/
+
+# ─── Editor / IDEs ──────────────────────────────────────────────────────────
+.vscode/settings.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ─── Logs ───────────────────────────────────────────────────────────────────
+logs/
+*.log
+
+# ─── Misc ───────────────────────────────────────────────────────────────────
+tmp/
+temp/
+.cache/
