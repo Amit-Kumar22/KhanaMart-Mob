@@ -1,13 +1,25 @@
-import React from 'react';
-import { View, Text, Image, TextInput, TouchableOpacity, StatusBar, Alert, ScrollView } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { AuthStackParamList } from '@/navigation/AuthStack';
-import { useRegister } from '../hooks/useAuth';
-import { registerSchema, RegisterFormData } from '../validation';
+import { AuthStackParamList } from "@/navigation/AuthStack";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { StackNavigationProp } from "@react-navigation/stack";
+import React, { useRef } from "react";
+import { Controller, useForm } from "react-hook-form";
+import {
+  Alert,
+  Image,
+  ScrollView,
+  StatusBar,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from "react-native";
+import { useRegister } from "../hooks/useAuth";
+import { RegisterFormData, registerSchema } from "../validation";
 
-type RegisterScreenNavigationProp = StackNavigationProp<AuthStackParamList, 'Register'>;
+type RegisterScreenNavigationProp = StackNavigationProp<
+  AuthStackParamList,
+  "Register"
+>;
 
 interface Props {
   navigation: RegisterScreenNavigationProp;
@@ -15,42 +27,62 @@ interface Props {
 
 export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
   const registerMutation = useRegister();
-  
-  const { control, handleSubmit, formState: { errors } } = useForm<RegisterFormData>({
+  const scrollViewRef = useRef<ScrollView>(null);
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
   });
 
   const onSubmit = (data: RegisterFormData) => {
     const { name, email, password } = data;
-    
-    registerMutation.mutate({ name, email, password }, {
-      onError: (error: any) => {
-        let errorMessage = 'An error occurred';
-        
-        if (error.code === 'NETWORK_ERROR' || error.message === 'Network Error') {
-          errorMessage = 'Network error - Check if the server is running';
-        } else if (error.response?.status === 404) {
-          errorMessage = 'API endpoint not found - Check server configuration';
-        } else if (error.response?.status === 500) {
-          errorMessage = 'Server error - Try again later';
-        } else if (error.response?.data?.message) {
-          errorMessage = error.response.data.message;
-        } else if (error.message) {
-          errorMessage = error.message;
-        }
-        
-        Alert.alert('Registration Failed', errorMessage);
+
+    registerMutation.mutate(
+      { name, email, password },
+      {
+        onError: (error: any) => {
+          let errorMessage = "An error occurred";
+
+          if (
+            error.code === "NETWORK_ERROR" ||
+            error.message === "Network Error"
+          ) {
+            errorMessage = "Network error - Check if the server is running";
+          } else if (error.response?.status === 404) {
+            errorMessage =
+              "API endpoint not found - Check server configuration";
+          } else if (error.response?.status === 500) {
+            errorMessage = "Server error - Try again later";
+          } else if (error.response?.data?.message) {
+            errorMessage = error.response.data.message;
+          } else if (error.message) {
+            errorMessage = error.message;
+          }
+
+          Alert.alert("Registration Failed", errorMessage);
+        },
       },
-    });
+    );
   };
 
   return (
     <View className="flex-1 bg-white">
       <StatusBar barStyle="dark-content" backgroundColor="white" />
-      
-      <ScrollView className="flex-1">
+
+      <ScrollView
+        ref={scrollViewRef}
+        className="flex-1"
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        nestedScrollEnabled={true}
+        automaticallyAdjustKeyboardInsets={true}
+      >
         <View className="px-6 pt-12">
-          <TouchableOpacity 
+          <TouchableOpacity
             className="w-10 h-10 bg-primary rounded-full items-center justify-center mb-8"
             onPress={() => navigation.goBack()}
           >
@@ -58,8 +90,8 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
           </TouchableOpacity>
 
           <View className="items-center mb-8">
-            <Image 
-              source={require('../../../../assets/images/sigup_logo.png')}
+            <Image
+              source={require("../../../../assets/images/sigup_logo.png")}
               className="w-64 h-48"
               resizeMode="contain"
             />
@@ -90,7 +122,9 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
                 )}
               />
               {errors.name && (
-                <Text className="text-red-500 text-sm mt-1">{errors.name.message}</Text>
+                <Text className="text-red-500 text-sm mt-1">
+                  {errors.name.message}
+                </Text>
               )}
             </View>
 
@@ -113,7 +147,9 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
                 )}
               />
               {errors.email && (
-                <Text className="text-red-500 text-sm mt-1">{errors.email.message}</Text>
+                <Text className="text-red-500 text-sm mt-1">
+                  {errors.email.message}
+                </Text>
               )}
             </View>
 
@@ -138,7 +174,9 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
                 )}
               />
               {errors.password && (
-                <Text className="text-red-500 text-sm mt-1">{errors.password.message}</Text>
+                <Text className="text-red-500 text-sm mt-1">
+                  {errors.password.message}
+                </Text>
               )}
             </View>
 
@@ -163,7 +201,9 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
                 )}
               />
               {errors.confirmPassword && (
-                <Text className="text-red-500 text-sm mt-1">{errors.confirmPassword.message}</Text>
+                <Text className="text-red-500 text-sm mt-1">
+                  {errors.confirmPassword.message}
+                </Text>
               )}
             </View>
 
@@ -172,17 +212,19 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
               <Text className="text-gray-600">Remember me</Text>
             </View>
 
-            <TouchableOpacity 
+            <TouchableOpacity
               className="bg-primary-dark rounded-full py-4 mt-8"
               onPress={handleSubmit(onSubmit)}
               disabled={registerMutation.isPending}
             >
               <Text className="text-white text-center text-lg font-semibold">
-                {registerMutation.isPending ? 'Signing up...' : 'Sign Up'}
+                {registerMutation.isPending ? "Signing up..." : "Sign Up"}
               </Text>
             </TouchableOpacity>
 
-            <Text className="text-center text-gray-500 mt-6">Or login with</Text>
+            <Text className="text-center text-gray-500 mt-6">
+              Or login with
+            </Text>
 
             <View className="flex-row justify-center space-x-4 mt-4">
               <TouchableOpacity className="flex-row items-center bg-gray-50 px-6 py-3 rounded-lg">
@@ -197,7 +239,7 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
 
             <View className="flex-row justify-center mt-6 mb-8">
               <Text className="text-gray-600">Already have an account? </Text>
-              <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+              <TouchableOpacity onPress={() => navigation.navigate("Login")}>
                 <Text className="font-semibold text-black">login</Text>
               </TouchableOpacity>
             </View>

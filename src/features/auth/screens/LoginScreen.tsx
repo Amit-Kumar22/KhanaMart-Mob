@@ -2,16 +2,17 @@ import { AuthStackParamList } from "@/navigation/AuthStack";
 import { Ionicons } from "@expo/vector-icons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
   Alert,
   Image,
+  ScrollView,
   StatusBar,
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import { useLogin } from "../hooks/useAuth";
 import { LoginFormData, loginSchema } from "../validation";
@@ -28,6 +29,8 @@ interface Props {
 export const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const loginMutation = useLogin();
   const [showPassword, setShowPassword] = useState(false);
+  const scrollViewRef = useRef<ScrollView>(null);
+  const passwordInputRef = useRef<View>(null);
 
   const {
     control,
@@ -73,7 +76,15 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
     <View className="flex-1 bg-white">
       <StatusBar barStyle="dark-content" backgroundColor="white" />
 
-      <View className="flex-1">
+      <ScrollView
+        ref={scrollViewRef}
+        className="flex-1"
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        nestedScrollEnabled={true}
+        automaticallyAdjustKeyboardInsets={true}
+      >
         <View className="bg-blue-50 px-6 pt-12 pb-8">
           <Image
             source={require("../../../../assets/images/login_logo.png")}
@@ -82,7 +93,8 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
           />
         </View>
 
-        <View className="flex-1 px-6 pt-8">
+        <View className="flex-1 px-6 pt-8 pb-6">
+          {/* Added pb-6 for bottom padding */}
           <Text className="text-2xl font-bold text-center mb-2">
             Login to Access Your
           </Text>
@@ -122,7 +134,7 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
               )}
             </View>
 
-            <View>
+            <View ref={passwordInputRef} onLayout={() => {}}>
               <Controller
                 control={control}
                 name="password"
@@ -141,6 +153,22 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
                       onChangeText={onChange}
                       secureTextEntry={!showPassword}
                       style={{ flex: 1, fontSize: 16, color: "#111827" }}
+                      onFocus={() => {
+                        setTimeout(() => {
+                          passwordInputRef.current?.measureLayout(
+                            scrollViewRef.current as any,
+                            (x, y, width, height) => {
+                              // Scroll much more to ensure field is above keyboard
+                              const keyboardHeight = 300; // Approximate keyboard height
+                              scrollViewRef.current?.scrollTo({
+                                y: y + height - keyboardHeight + 2050,
+                                animated: true,
+                              });
+                            },
+                            () => {},
+                          );
+                        }, 200);
+                      }}
                     />
                     <TouchableOpacity
                       onPress={() => setShowPassword(!showPassword)}
@@ -208,7 +236,7 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
             </View>
           </View>
         </View>
-      </View>
+      </ScrollView>
     </View>
   );
 };

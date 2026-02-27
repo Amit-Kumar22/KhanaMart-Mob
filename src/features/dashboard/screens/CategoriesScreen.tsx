@@ -1,22 +1,21 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Ionicons } from "@expo/vector-icons";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
-  View,
-  Text,
-  FlatList,
-  ScrollView,
-  TouchableOpacity,
-  Image,
-  StyleSheet,
-  ActivityIndicator,
-  Platform,
-  TextInput,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import { useCategories, useProducts } from '../hooks/useProducts';
-import { useCartStore } from '../../../store/cartStore';
-import { CartState } from '../../../store/cartStore';
-import { Product, ProductCategory } from '../types';
+    ActivityIndicator,
+    FlatList,
+    Image,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { CartState, useCartStore } from "../../../store/cartStore";
+import { useCategories, useProducts } from "../hooks/useProducts";
+import { Product, ProductCategory } from "../types";
 
 // ─── Discount Badge ──────────────────────────────────────────────────────────
 const DiscountBadge: React.FC<{ price: number; discountPrice: number }> = ({
@@ -33,13 +32,17 @@ const DiscountBadge: React.FC<{ price: number; discountPrice: number }> = ({
 };
 
 // ─── Product Card ─────────────────────────────────────────────────────────────
-const ProductCard: React.FC<{ product: Product; onPress?: () => void }> = ({ product, onPress }) => {
-  const addItem    = useCartStore((s: CartState) => s.addItem);
+const ProductCard: React.FC<{ product: Product; onPress?: () => void }> = ({
+  product,
+  onPress,
+}) => {
+  const addItem = useCartStore((s: CartState) => s.addItem);
   const increaseQty = useCartStore((s: CartState) => s.increaseQty);
   const decreaseQty = useCartStore((s: CartState) => s.decreaseQty);
-  const qty        = useCartStore((s: CartState) => s.getQty(product.id));
+  const qty = useCartStore((s: CartState) => s.getQty(product.id));
 
-  const displayPrice = product.discountPrice > 0 ? product.discountPrice : product.price;
+  const displayPrice =
+    product.discountPrice > 0 ? product.discountPrice : product.price;
 
   return (
     <View style={S.card}>
@@ -47,25 +50,40 @@ const ProductCard: React.FC<{ product: Product; onPress?: () => void }> = ({ pro
       <TouchableOpacity onPress={onPress} activeOpacity={0.88}>
         <View style={S.cardImgWrap}>
           {product.imageUrl ? (
-            <Image source={{ uri: product.imageUrl }} style={S.cardImg} resizeMode="cover" />
+            <Image
+              source={{ uri: product.imageUrl }}
+              style={S.cardImg}
+              resizeMode="cover"
+            />
           ) : (
             <View style={[S.cardImg, S.cardImgFallback]}>
               <Text style={{ fontSize: 30 }}>🍽️</Text>
             </View>
           )}
-          <DiscountBadge price={product.price} discountPrice={product.discountPrice} />
+          <DiscountBadge
+            price={product.price}
+            discountPrice={product.discountPrice}
+          />
         </View>
         <View style={S.cardBody}>
-          <Text style={S.cardName} numberOfLines={2}>{product.name}</Text>
-          <View style={S.cardRating}>
-            <Ionicons name="star" size={11} color="#F59E0B" />
-            <Text style={S.cardRatingTxt}> 4.5</Text>
-          </View>
+          <Text style={S.cardName} numberOfLines={2}>
+            {product.name}
+          </Text>
+          {product.preparationTime > 0 && (
+            <View style={S.cardRating}>
+              <Ionicons name="time-outline" size={11} color="#9CA3AF" />
+              <Text style={S.cardRatingTxt}>
+                {" "}
+                {product.preparationTime} min
+              </Text>
+            </View>
+          )}
           <View style={S.cardPriceRow}>
             <Text style={S.cardPrice}>₹{displayPrice}</Text>
-            {product.discountPrice > 0 && product.price > product.discountPrice && (
-              <Text style={S.cardMrp}>₹{product.price}</Text>
-            )}
+            {product.discountPrice > 0 &&
+              product.price > product.discountPrice && (
+                <Text style={S.cardMrp}>₹{product.price}</Text>
+              )}
           </View>
         </View>
       </TouchableOpacity>
@@ -74,16 +92,26 @@ const ProductCard: React.FC<{ product: Product; onPress?: () => void }> = ({ pro
       <View style={[S.cardBody, { paddingTop: 0 }]}>
         {qty > 0 ? (
           <View style={S.qtyRow}>
-            <TouchableOpacity style={S.qtyBtn} onPress={() => decreaseQty(product.id)}>
+            <TouchableOpacity
+              style={S.qtyBtn}
+              onPress={() => decreaseQty(product.id)}
+            >
               <Text style={S.qtyBtnTxt}>−</Text>
             </TouchableOpacity>
             <Text style={S.qtyNum}>{qty}</Text>
-            <TouchableOpacity style={[S.qtyBtn, S.qtyBtnGreen]} onPress={() => increaseQty(product.id)}>
-              <Text style={[S.qtyBtnTxt, { color: '#fff' }]}>+</Text>
+            <TouchableOpacity
+              style={[S.qtyBtn, S.qtyBtnGreen]}
+              onPress={() => increaseQty(product.id)}
+            >
+              <Text style={[S.qtyBtnTxt, { color: "#fff" }]}>+</Text>
             </TouchableOpacity>
           </View>
         ) : (
-          <TouchableOpacity style={S.addBtn} onPress={() => addItem(product)} activeOpacity={0.85}>
+          <TouchableOpacity
+            style={S.addBtn}
+            onPress={() => addItem(product)}
+            activeOpacity={0.85}
+          >
             <Text style={S.addBtnTxt}>Add</Text>
           </TouchableOpacity>
         )}
@@ -104,10 +132,16 @@ const SidebarItem: React.FC<{
     activeOpacity={0.8}
   >
     {active && <View style={S.sideActiveBar} />}
-    {item.icon
-      ? <Text style={S.sideEmoji}>{item.icon}</Text>
-      : <Ionicons name="cart-outline" size={18} color={active ? '#16A34A' : '#6B7280'} style={{ marginBottom: 2 }} />
-    }
+    {item.icon ? (
+      <Text style={S.sideEmoji}>{item.icon}</Text>
+    ) : (
+      <Ionicons
+        name="cart-outline"
+        size={18}
+        color={active ? "#16A34A" : "#6B7280"}
+        style={{ marginBottom: 2 }}
+      />
+    )}
     <Text style={[S.sideLabel, active && S.sideLabelActive]} numberOfLines={2}>
       {item.name}
     </Text>
@@ -116,16 +150,24 @@ const SidebarItem: React.FC<{
 
 // ─── Screen ───────────────────────────────────────────────────────────────────
 type Props = {
-  onTabPress?: (tab: import('../../../components/BottomTabBar').TabName) => void;
+  onTabPress?: (
+    tab: import("../../../components/BottomTabBar").TabName,
+  ) => void;
   initialCategory?: ProductCategory | null;
   onProductPress?: (product: Product) => void;
 };
 
-export const CategoriesScreen: React.FC<Props> = ({ onTabPress, initialCategory, onProductPress }) => {
-  const [activeCat, setActiveCat] = useState<ProductCategory | null>(initialCategory ?? null);
-  const [vegFilter, setVegFilter] = useState<'all' | 'veg' | 'nonveg'>('all');
-  const [search, setSearch]               = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
+export const CategoriesScreen: React.FC<Props> = ({
+  onTabPress,
+  initialCategory,
+  onProductPress,
+}) => {
+  const [activeCat, setActiveCat] = useState<ProductCategory | null>(
+    initialCategory ?? null,
+  );
+  const [vegFilter, setVegFilter] = useState<"all" | "veg" | "nonveg">("all");
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [searchBarOpen, setSearchBarOpen] = useState(false);
   const searchInputRef = useRef<TextInput>(null);
 
@@ -142,7 +184,10 @@ export const CategoriesScreen: React.FC<Props> = ({ onTabPress, initialCategory,
 
   const isSearching = debouncedSearch.length >= 2;
 
-  const { data: categoriesData, isLoading: catsLoading } = useCategories({ page: 0, size: 20 });
+  const { data: categoriesData, isLoading: catsLoading } = useCategories({
+    page: 0,
+    size: 20,
+  });
 
   const {
     data: productsData,
@@ -163,13 +208,13 @@ export const CategoriesScreen: React.FC<Props> = ({ onTabPress, initialCategory,
 
   const products = useMemo(() => {
     const all = productsData?.pages.flatMap((p) => p.data) ?? [];
-    if (vegFilter === 'veg') return all.filter((p) => p.isVeg);
-    if (vegFilter === 'nonveg') return all.filter((p) => !p.isVeg);
+    if (vegFilter === "veg") return all.filter((p) => p.isVeg);
+    if (vegFilter === "nonveg") return all.filter((p) => !p.isVeg);
     return all;
   }, [productsData, vegFilter]);
 
   const searchProducts = useMemo(
-    () => (isSearching ? searchData?.pages.flatMap((p) => p.data) ?? [] : []),
+    () => (isSearching ? (searchData?.pages.flatMap((p) => p.data) ?? []) : []),
     [searchData, isSearching],
   );
 
@@ -177,22 +222,32 @@ export const CategoriesScreen: React.FC<Props> = ({ onTabPress, initialCategory,
   const totalPrice = useCartStore((s: CartState) => s.totalPrice());
 
   return (
-    <SafeAreaView style={S.safeArea} edges={['top']}>
-
+    <SafeAreaView style={S.safeArea} edges={["top"]}>
       {/* ── Top header ── */}
       <View style={S.header}>
-        <TouchableOpacity style={S.backBtn} onPress={() => onTabPress?.('Home')}>
+        <TouchableOpacity
+          style={S.backBtn}
+          onPress={() => onTabPress?.("Home")}
+        >
           <Ionicons name="arrow-back" size={22} color="#1F2937" />
         </TouchableOpacity>
         <Text style={S.headerTitle}>Categories</Text>
         <TouchableOpacity
           onPress={() => {
             setSearchBarOpen((v) => !v);
-            if (!searchBarOpen) setTimeout(() => searchInputRef.current?.focus(), 100);
-            else { setSearch(''); setDebouncedSearch(''); }
+            if (!searchBarOpen)
+              setTimeout(() => searchInputRef.current?.focus(), 100);
+            else {
+              setSearch("");
+              setDebouncedSearch("");
+            }
           }}
         >
-          <Ionicons name={searchBarOpen ? 'close' : 'search-outline'} size={22} color="#1F2937" />
+          <Ionicons
+            name={searchBarOpen ? "close" : "search-outline"}
+            size={22}
+            color="#1F2937"
+          />
         </TouchableOpacity>
       </View>
 
@@ -200,7 +255,12 @@ export const CategoriesScreen: React.FC<Props> = ({ onTabPress, initialCategory,
       {searchBarOpen && (
         <View style={S.searchWrap}>
           <View style={S.searchBar}>
-            <Ionicons name="search-outline" size={17} color="#9CA3AF" style={{ marginLeft: 10 }} />
+            <Ionicons
+              name="search-outline"
+              size={17}
+              color="#9CA3AF"
+              style={{ marginLeft: 10 }}
+            />
             <TextInput
               ref={searchInputRef}
               style={S.searchInput}
@@ -213,7 +273,13 @@ export const CategoriesScreen: React.FC<Props> = ({ onTabPress, initialCategory,
               autoCapitalize="none"
             />
             {search.length > 0 && (
-              <TouchableOpacity onPress={() => { setSearch(''); setDebouncedSearch(''); }} style={{ paddingRight: 10 }}>
+              <TouchableOpacity
+                onPress={() => {
+                  setSearch("");
+                  setDebouncedSearch("");
+                }}
+                style={{ paddingRight: 10 }}
+              >
                 <Ionicons name="close-circle" size={17} color="#9CA3AF" />
               </TouchableOpacity>
             )}
@@ -229,20 +295,34 @@ export const CategoriesScreen: React.FC<Props> = ({ onTabPress, initialCategory,
           <Ionicons name="chevron-down" size={12} color="#374151" />
         </TouchableOpacity>
         <TouchableOpacity
-          style={[S.filterChip, vegFilter === 'veg' && S.filterChipActive]}
-          onPress={() => setVegFilter((v) => (v === 'veg' ? 'all' : 'veg'))}
+          style={[S.filterChip, vegFilter === "veg" && S.filterChipActive]}
+          onPress={() => setVegFilter((v) => (v === "veg" ? "all" : "veg"))}
         >
           <Text style={S.filterDot}>��</Text>
-          <Text style={[S.filterChipTxt, vegFilter === 'veg' && S.filterChipTxtActive]}>
+          <Text
+            style={[
+              S.filterChipTxt,
+              vegFilter === "veg" && S.filterChipTxtActive,
+            ]}
+          >
             Veg Only
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[S.filterChip, vegFilter === 'nonveg' && S.filterChipActive]}
-          onPress={() => setVegFilter((v) => (v === 'nonveg' ? 'all' : 'nonveg'))}
+          style={[S.filterChip, vegFilter === "nonveg" && S.filterChipActive]}
+          onPress={() =>
+            setVegFilter((v) => (v === "nonveg" ? "all" : "nonveg"))
+          }
         >
           <Text style={S.filterDot}>��</Text>
-          <Text style={[S.filterChipTxt, vegFilter === 'nonveg' && S.filterChipActive && S.filterChipTxtActive]}>
+          <Text
+            style={[
+              S.filterChipTxt,
+              vegFilter === "nonveg" &&
+                S.filterChipActive &&
+                S.filterChipTxtActive,
+            ]}
+          >
             Non-Veg
           </Text>
         </TouchableOpacity>
@@ -261,7 +341,9 @@ export const CategoriesScreen: React.FC<Props> = ({ onTabPress, initialCategory,
             <Text style={S.searchSectionTitle}>
               🔍 Results for "{debouncedSearch}"
             </Text>
-            {searchFetching && <ActivityIndicator size="small" color="#16A34A" />}
+            {searchFetching && (
+              <ActivityIndicator size="small" color="#16A34A" />
+            )}
           </View>
 
           {searchLoading ? (
@@ -269,13 +351,18 @@ export const CategoriesScreen: React.FC<Props> = ({ onTabPress, initialCategory,
           ) : searchProducts.length === 0 ? (
             <View style={S.searchEmpty}>
               <Text style={S.searchEmptyEmoji}>😕</Text>
-              <Text style={S.searchEmptyTxt}>No results found for "{debouncedSearch}"</Text>
+              <Text style={S.searchEmptyTxt}>
+                No results found for "{debouncedSearch}"
+              </Text>
             </View>
           ) : (
             <View style={S.searchGrid}>
               {searchProducts.map((item) => (
                 <View key={item.id} style={S.searchCardWrap}>
-                  <ProductCard product={item} onPress={() => onProductPress?.(item)} />
+                  <ProductCard
+                    product={item}
+                    onPress={() => onProductPress?.(item)}
+                  />
                 </View>
               ))}
             </View>
@@ -284,7 +371,6 @@ export const CategoriesScreen: React.FC<Props> = ({ onTabPress, initialCategory,
       ) : (
         /* ── Normal: sidebar + product grid ── */
         <View style={S.body}>
-
           {/* Left sidebar */}
           {catsLoading ? (
             <View style={S.sidebar}>
@@ -301,7 +387,9 @@ export const CategoriesScreen: React.FC<Props> = ({ onTabPress, initialCategory,
                     key={cat.id}
                     item={cat}
                     active={activeCat?.id === cat.id}
-                    onPress={() => setActiveCat((p) => (p?.id === cat.id ? null : cat))}
+                    onPress={() =>
+                      setActiveCat((p) => (p?.id === cat.id ? null : cat))
+                    }
                   />
                 ))}
               </ScrollView>
@@ -318,17 +406,27 @@ export const CategoriesScreen: React.FC<Props> = ({ onTabPress, initialCategory,
               style={S.gridWrap}
               data={products}
               keyExtractor={(item) => String(item.id)}
-              renderItem={({ item }) => <ProductCard product={item} onPress={() => onProductPress?.(item)} />}
+              renderItem={({ item }) => (
+                <ProductCard
+                  product={item}
+                  onPress={() => onProductPress?.(item)}
+                />
+              )}
               numColumns={2}
               columnWrapperStyle={S.gridRow}
               contentContainerStyle={S.gridContent}
               showsVerticalScrollIndicator={false}
-              onEndReached={() => { if (hasNextPage && !isFetchingNextPage) fetchNextPage(); }}
+              onEndReached={() => {
+                if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+              }}
               onEndReachedThreshold={0.4}
               ListFooterComponent={
-                isFetchingNextPage
-                  ? <ActivityIndicator color="#16A34A" style={{ marginVertical: 12 }} />
-                  : null
+                isFetchingNextPage ? (
+                  <ActivityIndicator
+                    color="#16A34A"
+                    style={{ marginVertical: 12 }}
+                  />
+                ) : null
               }
               ListEmptyComponent={
                 <View style={S.emptyWrap}>
@@ -343,9 +441,13 @@ export const CategoriesScreen: React.FC<Props> = ({ onTabPress, initialCategory,
 
       {/* ── Sticky cart bar ── */}
       {totalItems > 0 && (
-        <TouchableOpacity style={S.cartBar} activeOpacity={0.9} onPress={() => onTabPress?.('Cart')}>
+        <TouchableOpacity
+          style={S.cartBar}
+          activeOpacity={0.9}
+          onPress={() => onTabPress?.("Cart")}
+        >
           <Text style={S.cartBarLeft}>
-            {totalItems} Item{totalItems > 1 ? 's' : ''} | ₹{totalPrice}
+            {totalItems} Item{totalItems > 1 ? "s" : ""} | ₹{totalPrice}
           </Text>
           <View style={S.cartBarRight}>
             <Text style={S.cartBarRightTxt}>View Cart</Text>
@@ -359,60 +461,60 @@ export const CategoriesScreen: React.FC<Props> = ({ onTabPress, initialCategory,
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 const S = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#fff' },
+  safeArea: { flex: 1, backgroundColor: "#fff" },
 
   // header
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 14,
     paddingVertical: 10,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   backBtn: { padding: 2 },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: '#1F2937' },
+  headerTitle: { fontSize: 18, fontWeight: "700", color: "#1F2937" },
 
   // filter bar
   filterBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 12,
     paddingBottom: 8,
     gap: 8,
   },
   sortBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1,
-    borderColor: '#D1D5DB',
+    borderColor: "#D1D5DB",
     borderRadius: 20,
     paddingHorizontal: 10,
     paddingVertical: 5,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
-  sortTxt: { fontSize: 12, color: '#374151', fontWeight: '500' },
+  sortTxt: { fontSize: 12, color: "#374151", fontWeight: "500" },
   filterChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1,
-    borderColor: '#D1D5DB',
+    borderColor: "#D1D5DB",
     borderRadius: 20,
     paddingHorizontal: 10,
     paddingVertical: 5,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     gap: 4,
   },
   filterChipActive: {
-    backgroundColor: '#F0FDF4',
-    borderColor: '#16A34A',
+    backgroundColor: "#F0FDF4",
+    borderColor: "#16A34A",
   },
   filterDot: { fontSize: 11 },
-  filterChipTxt: { fontSize: 12, color: '#374151', fontWeight: '500' },
-  filterChipTxtActive: { color: '#16A34A', fontWeight: '700' },
+  filterChipTxt: { fontSize: 12, color: "#374151", fontWeight: "500" },
+  filterChipTxtActive: { color: "#16A34A", fontWeight: "700" },
 
   // body
-  body: { flex: 1, flexDirection: 'row' },
+  body: { flex: 1, flexDirection: "row" },
 
   // left sidebar
   sidebar: {
@@ -420,54 +522,54 @@ const S = StyleSheet.create({
     flexShrink: 0,
     flexGrow: 0,
     marginLeft: 8,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: "#F9FAFB",
     borderRightWidth: 1,
-    borderRightColor: '#F3F4F6',
+    borderRightColor: "#F3F4F6",
   },
   sideItem: {
-    alignItems: 'flex-start',
-    justifyContent: 'center',
+    alignItems: "flex-start",
+    justifyContent: "center",
     paddingVertical: 8,
     paddingLeft: 8,
     paddingRight: 2,
-    position: 'relative',
+    position: "relative",
     minHeight: 58,
   },
-  sideItemActive: { backgroundColor: '#fff' },
+  sideItemActive: { backgroundColor: "#fff" },
   sideActiveBar: {
-    position: 'absolute',
+    position: "absolute",
     left: 0,
     top: 10,
     bottom: 10,
     width: 3,
-    backgroundColor: '#16A34A',
+    backgroundColor: "#16A34A",
     borderTopRightRadius: 3,
     borderBottomRightRadius: 3,
   },
   sideEmoji: { fontSize: 18, marginBottom: 2 },
   sideLabel: {
     fontSize: 9,
-    color: '#6B7280',
-    textAlign: 'left',
-    fontWeight: '500',
+    color: "#6B7280",
+    textAlign: "left",
+    fontWeight: "500",
     lineHeight: 12,
   },
-  sideLabelActive: { color: '#16A34A', fontWeight: '700' },
+  sideLabelActive: { color: "#16A34A", fontWeight: "700" },
 
   // right grid
   gridWrap: { flex: 1 },
   gridContent: { padding: 8, paddingBottom: 16 },
-  gridRow: { justifyContent: 'space-between', marginBottom: 10 },
+  gridRow: { justifyContent: "space-between", marginBottom: 10 },
 
   // card
   card: {
-    width: '48.5%',
-    backgroundColor: '#fff',
+    width: "48.5%",
+    backgroundColor: "#fff",
     borderRadius: 10,
-    overflow: 'hidden',
+    overflow: "hidden",
     ...Platform.select({
       ios: {
-        shadowColor: '#000',
+        shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.07,
         shadowRadius: 5,
@@ -475,81 +577,90 @@ const S = StyleSheet.create({
       android: { elevation: 3 },
     }),
   },
-  cardImgWrap: { width: '100%', height: 110, position: 'relative' },
-  cardImg: { width: '100%', height: '100%' },
+  cardImgWrap: { width: "100%", height: 110, position: "relative" },
+  cardImg: { width: "100%", height: "100%" },
   cardImgFallback: {
-    backgroundColor: '#F3F4F6',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#F3F4F6",
+    alignItems: "center",
+    justifyContent: "center",
   },
   discBadge: {
-    position: 'absolute',
+    position: "absolute",
     top: 6,
     left: 6,
-    backgroundColor: '#F59E0B',
+    backgroundColor: "#F59E0B",
     borderRadius: 4,
     paddingHorizontal: 5,
     paddingVertical: 2,
   },
-  discBadgeTxt: { color: '#fff', fontSize: 9, fontWeight: '700' },
+  discBadgeTxt: { color: "#fff", fontSize: 9, fontWeight: "700" },
 
   cardBody: { padding: 7 },
   cardName: {
     fontSize: 12,
-    fontWeight: '600',
-    color: '#1F2937',
+    fontWeight: "600",
+    color: "#1F2937",
     lineHeight: 16,
     minHeight: 32,
   },
-  cardRating: { flexDirection: 'row', alignItems: 'center', marginTop: 2 },
-  cardRatingTxt: { fontSize: 10, color: '#374151', fontWeight: '600' },
+  cardRating: { flexDirection: "row", alignItems: "center", marginTop: 2 },
+  cardRatingTxt: { fontSize: 10, color: "#374151", fontWeight: "600" },
   cardPriceRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginTop: 3,
     gap: 4,
   },
-  cardPrice: { fontSize: 13, fontWeight: '700', color: '#1F2937' },
-  cardMrp: { fontSize: 10, color: '#9CA3AF', textDecorationLine: 'line-through' },
+  cardPrice: { fontSize: 13, fontWeight: "700", color: "#1F2937" },
+  cardMrp: {
+    fontSize: 10,
+    color: "#9CA3AF",
+    textDecorationLine: "line-through",
+  },
 
   addBtn: {
-    backgroundColor: '#064E3B',
+    backgroundColor: "#064E3B",
     borderRadius: 6,
     paddingVertical: 5,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 5,
   },
-  addBtnTxt: { color: '#fff', fontSize: 12, fontWeight: '700' },
+  addBtnTxt: { color: "#fff", fontSize: 12, fontWeight: "700" },
 
   qtyRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginTop: 5,
   },
   qtyBtn: {
     width: 26,
     height: 26,
     borderRadius: 6,
-    backgroundColor: '#F3F4F6',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#F3F4F6",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  qtyBtnGreen: { backgroundColor: '#064E3B' },
-  qtyBtnTxt: { fontSize: 16, fontWeight: '700', color: '#374151', lineHeight: 20 },
-  qtyNum: { fontSize: 13, fontWeight: '700', color: '#1F2937' },
+  qtyBtnGreen: { backgroundColor: "#064E3B" },
+  qtyBtnTxt: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#374151",
+    lineHeight: 20,
+  },
+  qtyNum: { fontSize: 13, fontWeight: "700", color: "#1F2937" },
 
   // empty
-  emptyWrap: { flex: 1, alignItems: 'center', paddingTop: 60 },
+  emptyWrap: { flex: 1, alignItems: "center", paddingTop: 60 },
   emptyEmoji: { fontSize: 40, marginBottom: 8 },
-  emptyTxt: { fontSize: 14, color: '#9CA3AF' },
+  emptyTxt: { fontSize: 14, color: "#9CA3AF" },
 
   // sticky cart bar
   cartBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#16A34A',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#16A34A",
     paddingHorizontal: 20,
     paddingVertical: 14,
     marginHorizontal: 12,
@@ -557,7 +668,7 @@ const S = StyleSheet.create({
     borderRadius: 12,
     ...Platform.select({
       ios: {
-        shadowColor: '#16A34A',
+        shadowColor: "#16A34A",
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.35,
         shadowRadius: 8,
@@ -565,26 +676,42 @@ const S = StyleSheet.create({
       android: { elevation: 8 },
     }),
   },
-  cartBarLeft: { color: '#fff', fontSize: 14, fontWeight: '700' },
-  cartBarRight: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  cartBarRightTxt: { color: '#fff', fontSize: 14, fontWeight: '700' },
+  cartBarLeft: { color: "#fff", fontSize: 14, fontWeight: "700" },
+  cartBarRight: { flexDirection: "row", alignItems: "center", gap: 6 },
+  cartBarRightTxt: { color: "#fff", fontSize: 14, fontWeight: "700" },
 
   // ── Search ──
-  searchWrap: { paddingHorizontal: 12, paddingBottom: 8, backgroundColor: '#fff' },
-  searchBar: {
-    flexDirection: 'row', alignItems: 'center',
-    backgroundColor: '#F3F4F6', borderRadius: 10,
-    paddingVertical: Platform.OS === 'ios' ? 10 : 2,
+  searchWrap: {
+    paddingHorizontal: 12,
+    paddingBottom: 8,
+    backgroundColor: "#fff",
   },
-  searchInput: { flex: 1, fontSize: 14, color: '#1F2937', paddingHorizontal: 8 },
+  searchBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F3F4F6",
+    borderRadius: 10,
+    paddingVertical: Platform.OS === "ios" ? 10 : 2,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 14,
+    color: "#1F2937",
+    paddingHorizontal: 8,
+  },
 
   // ── Search results ──
   searchSection: { paddingHorizontal: 12, paddingTop: 8 },
-  searchSectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 },
-  searchSectionTitle: { fontSize: 14, fontWeight: '700', color: '#1F2937' },
-  searchGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  searchCardWrap: { width: '47%' },
-  searchEmpty: { alignItems: 'center', paddingVertical: 40 },
+  searchSectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 10,
+  },
+  searchSectionTitle: { fontSize: 14, fontWeight: "700", color: "#1F2937" },
+  searchGrid: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
+  searchCardWrap: { width: "47%" },
+  searchEmpty: { alignItems: "center", paddingVertical: 40 },
   searchEmptyEmoji: { fontSize: 36, marginBottom: 8 },
-  searchEmptyTxt: { fontSize: 14, color: '#6B7280', textAlign: 'center' },
+  searchEmptyTxt: { fontSize: 14, color: "#6B7280", textAlign: "center" },
 });
